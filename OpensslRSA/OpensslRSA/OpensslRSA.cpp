@@ -103,9 +103,23 @@ int createPrivateFile(char *file, const string &pristr)
 }
 
  
- 
+
 int main()
 {
+
+	//test generateRSAKey
+	string key[2];
+
+	if (utils_openssl::generateRSAKey(key))
+	{
+		printf("generateRSAKey public \n");
+		printf("%s \n",key[0].c_str());
+
+		printf("generateRSAKey private \n");
+		printf("%s \n", key[1].c_str());
+	}
+
+	return 0;
 	char plainText[2048 / 8] = "ddfdf@$%j jkfhhhhhhhgffdddd";//key length : 2048  
 	printf("create pem file\n");
 	string strPublicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQChNr0TmflORv9C62+tSAYhyj4DwB6fyOHqttddq8Y+R+8cIGT7EKuqSRuUUuLVBN6IIjd14UkxxtjHqrDxPWZz9WfX0LB2lTmnSdkg9Q10IfP9ZrVCW8Pe5vJ7gt5iQ4lOebdqR47+ef9E7oE+eJFQhxSYGGy/FnKjBkadJQtwPQIDAQAB";

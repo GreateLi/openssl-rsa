@@ -73,6 +73,8 @@ public:
     static string Base64Decode(const char * input, int length, bool with_new_line);
     static int aes_encrypt(const unsigned char* in, const unsigned char* key, const unsigned char* out, int inLen);
     static int aes_decrypt(const unsigned char* in, const unsigned char* key, unsigned char* out, int inLen);
+	//Éú³É rsa Ë½Ô¿ ¹«Ô¿
+	static bool generateRSAKey(std::string strKey[2]);
 };
 
 
