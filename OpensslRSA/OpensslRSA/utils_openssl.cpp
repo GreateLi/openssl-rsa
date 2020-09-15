@@ -1,6 +1,6 @@
 
 #include "utils_openssl.h"
-int padding = RSA_PKCS1_PADDING;
+#define  THIS_RSA_PADDING   RSA_PKCS1_PADDING 
 #if  defined(WIN32) || defined(_WIN32) || defined(WINDOWS)
  
 #pragma comment(lib, "libcrypto.lib")
@@ -21,7 +21,7 @@ int padding = RSA_PKCS1_PADDING;
 #endif
 
 // ---- rsa非对称加解密 ---- //    
-#define KEY_LENGTH  1024               // 密钥长度  
+#define KEY_LENGTH  2048               // 密钥长度  
 #define PUB_KEY_FILE "publickey.pem"    // 公钥路径  
 #define PRI_KEY_FILE "privatekey.pem"    // 私钥路径  
 
@@ -34,7 +34,7 @@ bool utils_openssl::generateRSAKey(std::string strKey[2])
 	size_t pub_len;
 	char *pri_key = NULL;
 	char *pub_key = NULL;
-
+ 
 	// 生成密钥对    
 	RSA *keypair = RSA_generate_key(KEY_LENGTH, RSA_F4, NULL, NULL);
 
@@ -42,7 +42,7 @@ bool utils_openssl::generateRSAKey(std::string strKey[2])
 	BIO *pub = BIO_new(BIO_s_mem());
 
 	PEM_write_bio_RSAPrivateKey(pri, keypair, NULL, NULL, 0, NULL, NULL);
-	PEM_write_bio_RSAPublicKey(pub, keypair);
+	PEM_write_bio_RSAPublicKey(pub, keypair);////PEM_write_bio_RSA_PUBKEY match PEM_read_bio_RSA_PUBKEY; PEM_write_bio_RSAPublicKey match PEM_read_bio_RSAPublicKey
 
 	// 获取长度    
 	pri_len = BIO_pending(pri);
@@ -116,7 +116,7 @@ bool utils_openssl::generateRSAKey(std::string strKey[2])
     }
 
     if(flag)
-        rsa = PEM_read_bio_RSA_PUBKEY(keybio, NULL, NULL, NULL);
+		rsa = PEM_read_bio_RSAPublicKey(keybio, NULL, NULL, NULL);
     else
         rsa = PEM_read_bio_RSAPrivateKey(keybio, &rsa, NULL, NULL);
 
@@ -187,14 +187,14 @@ bool utils_openssl::generateRSAKey(std::string strKey[2])
   int utils_openssl::public_encrypt(unsigned char*data, int data_len, unsigned char*key, unsigned char*encrypted)
   {
 	  RSA* rsa = createRSA(key, 1);
-	  int result = RSA_public_encrypt(data_len, data, encrypted, rsa, padding);
+	  int result = RSA_public_encrypt(data_len, data, encrypted, rsa, THIS_RSA_PADDING);
 	  return result;
   }
 
   int utils_openssl::private_decrypt(unsigned char*enc_data, int data_len, unsigned char*key, unsigned char*decrypted)
   {
 	  RSA* rsa = createRSA(key, 0);
-	  int result = RSA_private_decrypt(data_len, enc_data, decrypted, rsa, padding);
+	  int result = RSA_private_decrypt(data_len, enc_data, decrypted, rsa, THIS_RSA_PADDING);
 	  return result;
   }
   /*
@@ -208,7 +208,7 @@ bool utils_openssl::generateRSAKey(std::string strKey[2])
 
 	  int nLen = RSA_size(pRSAPrivateKey);
 	  unsigned char * pEncode = new unsigned char[nLen + 1];
-	  *outlen = RSA_private_encrypt(strData.length(), (const unsigned char*)strData.c_str(), (unsigned char*)pEncode, pRSAPrivateKey, RSA_PKCS1_PADDING);
+	  *outlen = RSA_private_encrypt(strData.length(), (const unsigned char*)strData.c_str(), (unsigned char*)pEncode, pRSAPrivateKey, THIS_RSA_PADDING);
 	 
 	//  delete[] pEncode;
 	  RSA_free(pRSAPrivateKey);
@@ -244,7 +244,7 @@ bool utils_openssl::generateRSAKey(std::string strKey[2])
         memset((void *)enc_tmp, 0, decryptLen);
 
         memcpy(enc_tmp, enc_data+pos, length);
-        int  result = RSA_public_decrypt(length, enc_tmp, out, rsa, RSA_PKCS1_PADDING);
+		int  result = RSA_public_decrypt(length, enc_tmp, out, rsa, THIS_RSA_PADDING);
 
         if(result>0)
         {
